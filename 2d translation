@@ -1,0 +1,231 @@
+#include "Stdio.h"
+#include "math.h"
+#include "graphics.h"
+
+void intgraph();
+int Create_Pol(int Pol[][2]);
+void tran_rel(int Pol[][2], int points, int Xd, int Yd); // Translative to relative
+void disp_coord(char b_color, char l_color);
+void fill_Pol(int Pol[][2], int points, char l_color, char fill_color);
+void Identity(float M[3][3]);
+
+ void intgraph()
+   {
+      int g = DETECT, d;
+      initgraph(&g, &d, "c:\tc\bgi");
+   }
+
+ int Create_Pol(int Pol[][2])
+   {
+      Pol[0][0] = 180;
+      Pol[0][1] = 31;
+
+      Pol[1][0] = 289;
+      Pol[1][1] = 140;
+
+      Pol[2][0] = 100;
+      Pol[2][1] = 300;
+
+      return 2;
+   }
+
+void main()
+{
+    int Pol[3][2], i, points, Xd, Yd;
+    float Sx, Sy, M[3][3] ,temp, Cos, Sin;
+    char ch;
+    intgraph();
+
+    setfillstyle(8, RED);
+    points = Create_Pol(Pol);
+    disp_coord(BLUE, WHITE);
+    fill_Pol(Pol, points, WHITE, RED);
+
+
+    Identity(M);
+    Xd= 0 - Pol[0][0];
+    Yd= 0 - Pol[0][1];
+
+    tran_rel(Pol, points, Xd, Yd);
+
+   Menu:
+      restorecrtmode();
+      do
+      {
+       
+         printf("--------------------------------------------------------------\n 1. Scaling \n 2. Translation\n 3. Rotation\n 4. Reflection [ X axis ]\n 5. Reflection [ Y axis ]\n 6. Reflection [ X = Y axis ]\n 7. Draw\n 8. EXIT\n-----------------------------------------------------------------\nChoose one \n ");
+      scanf("%c", &ch);
+      } while( (ch<'1') || (ch>'8') );
+
+      switch(ch)
+      {
+         case '1':
+            printf("
+ Enter Scaling Ratio ");
+            printf("
+	 Sx = ");
+            scanf("%f", &Sx);
+            printf("	 Sy = ");
+            scanf("%f",&Sy);
+            for(i = 0; i < 3; i++)
+            {
+               M[i][0] = M[i][0] * Sx;
+               M[i][1] = M[i][1] * Sy;
+            }
+            goto Menu;
+
+         case '2':
+            printf("
+ Enter Translation [Relative] =  ");
+            printf("
+	 Tx =  ");
+            scanf("%f", &Sx);
+            printf("	 Ty =  ");
+            scanf("%f", &Sy);
+
+            M[2][0] = M[2][0] + Sx;
+            M[2][1] = M[2][1] + Sy;
+
+            goto Menu;
+
+         case '3':
+            printf("
+ Enter Rotation Angle [Degree] = ");
+            scanf("%f", &Sx);
+
+            Sx = (Sx * 3.14) / 180;
+            Cos = cos(Sx);
+            Sin = sin(Sx);
+            for(i = 0; i <= 2; i++)
+            {
+               temp = M[i][0] * Cos - M[i][1] * Sin;
+               M[i][1] = M[i][0] * Sin + M[i][1] * Cos;
+               M[i][0] = temp;
+            }
+            goto Menu;
+
+         case '4':
+            M[1][1] = M[1][1] * -1;
+            printf("Done");
+            goto Menu;
+
+         case '5':
+            M[0][0] = M[0][0] * -1;
+            printf("Done");          
+
+            goto Menu;
+
+         case '6':
+            M[0][1] = 1;
+            M[1][1] = 1;
+            printf("Done");
+            goto Menu;
+
+         case '7':
+            for(i = 0; i <= points; i++)
+            {
+               temp = Pol[i][0] * M[0][0] + Pol[i][1] * M[1][0] + M[2][0];
+	       Pol[i][1] = Pol[i][0] * M[0][1] + Pol[i][1] * M[1][1] + M[2][1];
+               Pol[i][0] = temp;
+            }
+
+         case '8':
+
+            exit(0);
+      }
+      setgraphmode(2);
+      disp_coord(BLUE, WHITE);
+      tran_rel(Pol, points, -Xd, -Yd);
+      fill_Pol(Pol, points, CYAN, RED);
+      restorecrtmode();
+      do
+      {
+
+         printf("
+
+
+	 Do you Want to Switch to MENU [Y|N] =  ");
+         scanf("%c", &ch);
+      }while( (ch != 'Y') && (ch != 'N') );
+      if(ch=='Y')
+      {
+         Identity(M);
+         Xd = 0 - Pol[0][0];
+         Yd = 0 - Pol[0][1];
+
+         tran_rel(Pol,points,Xd,Yd);
+         goto Menu;
+      }
+      closegraph();
+   }
+
+  
+
+   void fill_Pol(int Pol1[][2],int points,char l_color,char fill_color)
+   {
+      int pol[20],i;
+      char str[2];
+      for(i = 0 ; i <= points; i++)
+      {
+         pol[i * 2] = Pol1[i][0];
+         pol[i * 2 + 1] = Pol1[i][1];
+      }
+      pol[i * 2] = Pol1[0][0];
+      pol[i * 2 + 1] = Pol1[0][1];
+
+      setcolor(l_color);
+      setfillstyle(8, fill_color);
+      fillPol(points + 1, pol);
+
+      setcolor(fill_color);
+      settextstyle(1, 0, 3);
+      for(i = 0; i <= points; i++)
+      {
+         sprintf(str, "%c", i+'a');
+         outtextxy(Pol1[i][0], Pol1[i][1], str);
+      }
+   }
+
+   void Identity(float M[3][3])
+   {
+      int i, j;
+      for(i = 0; i <= 2; i++)
+      {
+         for(j = 0;j <= 2;j++)
+         {
+            if(i == j)
+               M[i][j] = 1;
+            else
+               M[i][j]  = 0;
+         }
+      }
+   }
+  
+
+   void disp_coord(char b_color,char l_color)
+   {
+      int i;
+      setbkcolor(b_color);
+      setcolor(l_color);
+      for(i = 0; i <= 640; i += 50)
+      {
+         line(i, 0, i, 480);
+      }
+
+      for(i = 0; i <= 480; i += 50)
+      {
+         line(0, i, 640, i);
+      } 
+      rectangle(0, 0, 639, 479);
+   }
+
+   void tran_rel(int Pol[][2], int points, int Xd, int Yd)
+   {
+      int i;
+      for(i = 0;i <= points; i++)
+      {
+         Pol[i][0] = Pol[i][0] + Xd;
+         Pol[i][1] = Pol[i][1] + Yd;
+      }
+   }
+
