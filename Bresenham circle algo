@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <graphics.h>
+#include <conio.h>
+
+int main() {
+	int x_centre, y_centre, x, y, rad, p, g1;
+	int g2 = DETECT;
+	initgraph(&g2, &g1, NULL);
+	printf("Enter x and y coordinates of the circle\n");
+	scanf("%d%d", &x_centre, &y_centre);
+	printf("Enter the radius \n");
+	scanf("%d", &rad);
+	y = rad;
+	x = 0;
+	putpixel(x_centre + x, y_centre - y, BLUE);
+	p = 3 - (r * 2);
+	for(x = 0; x <= y; x++) {
+		if (p < 0) {
+			p = (p + (x * 4) + 6);
+		}
+		else {
+			y = y - 1;
+			p = p + (4 * (x - y)) + 10;
+		}
+		putpixel(x_centre + x, y_centre - y, BLUE);
+		putpixel(x_centre - x, y_centre - y, BLUE);
+		putpixel(x_centre + x, y_centre + y, BLUE);
+		putpixel(x_centre - x, y_centre + y, BLUE);
+		putpixel(x_centre + y, y_centre - x, BLUE);
+		putpixel(x_centre - y, y_centre - x, BLUE);
+		putpixel(x_centre + y, y_centre + x, BLUE);
+		putpixel(x_centre - y, y_centre + x, BLUE);
+	}
+	getch();
+	closegraph();
+	return 0;
+}
